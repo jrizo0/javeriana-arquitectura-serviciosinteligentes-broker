@@ -19,7 +19,7 @@ import org.springframework.messaging.MessagingException;
 
 @Configuration
 public class MqttBeans {
-	private String topicLocation = "data/locationChanges";
+	private String topicEvents = "data/events";
 
 	@Bean
 	public MqttPahoClientFactory mqttClientFactory() {
@@ -44,8 +44,9 @@ public class MqttBeans {
 
 	@Bean
 	public MessageProducer inbound() {
-		MqttPahoMessageDrivenChannelAdapter adapter = new MqttPahoMessageDrivenChannelAdapter("serverIn",
-				mqttClientFactory(), topicLocation);
+		MqttPahoMessageDrivenChannelAdapter adapter = new MqttPahoMessageDrivenChannelAdapter(
+				"serverInServiciosInteligentes",
+				mqttClientFactory(), topicEvents);
 
 		adapter.setCompletionTimeout(5000);
 		adapter.setConverter(new DefaultPahoMessageConverter());
@@ -60,28 +61,9 @@ public class MqttBeans {
 		return new MessageHandler() {
 			@Override
 			public void handleMessage(Message<?> message) throws MessagingException {
-				// String topic =
-				// message.getHeaders().get(MqttHeaders.RECEIVED_TOPIC).toString();
-				System.out.println("Se recibio un cambio en las localizaciones de los usuarios:");
+				System.out.println("Se recibio un evento de soporte:");
 				System.out.println(message.getPayload());
 			}
 		};
 	}
-
-	@Bean
-	public MessageChannel mqttOutboundChannel() {
-		return new DirectChannel();
-	}
-
-	@Bean
-	@ServiceActivator(inputChannel = "mqttOutboundChannel")
-	public MessageHandler mqttOutbound() {
-		// clientId is generated using a random number
-		MqttPahoMessageHandler messageHandler = new MqttPahoMessageHandler("serverOut", mqttClientFactory());
-		messageHandler.setAsync(true);
-		messageHandler.setDefaultTopic("data/#");
-		messageHandler.setDefaultRetained(false);
-		return messageHandler;
-	}
-
 }
