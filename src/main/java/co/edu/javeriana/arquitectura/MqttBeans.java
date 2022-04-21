@@ -18,6 +18,8 @@ import org.springframework.messaging.MessagingException;
 @Configuration
 public class MqttBeans {
 	private String topicEvents = "data/events";
+	// private String topicLocationChanges = "data/locationChanges";
+	// private String topicIots = "data/iots";
 
 	@Bean
 	public MqttPahoClientFactory mqttClientFactory() {
